@@ -44,8 +44,9 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
         if test -d $path
           set -l dir $path
         else if test -f $path
+          set -l base_path (basename $path)
           # left prompt
-          if [ (basename $path) = 'fish_prompt.fish' ]
+          if [ $base_path = 'fish_prompt.fish' ]
             if not set -q salmon_fish_prompt_sourced
               set -g salmon_fish_prompt_sourced 'true'
               set -g salmon_chips_sources $salmon_chips_sources $path
@@ -54,7 +55,7 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
           end
 
           # right prompt
-          if [ (basename $path) = 'fish_right_prompt.fish' ]
+          if [ $base_path = 'fish_right_prompt.fish' ]
             if not set -q salmon_fish_right_prompt_sourced
               set -g salmon_fish_right_prompt_sourced 'true'
               set -g salmon_chips_sources $salmon_chips_sources $path
@@ -92,7 +93,9 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
 
       if test -d $dir/functions
         for v in $dir/functions/*.fish
-          set -g salmon_chips_sources $salmon_chips_sources $v
+          if not [ (basename $v) = 'uninstall.fish' ]
+            set -g salmon_chips_sources $salmon_chips_sources $v
+          end
         end
         set plugin_is_sane 'true'
       end
@@ -100,7 +103,9 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
       if [ $plugin_is_sane = '' ]
         # it must be insane
         for v in $dir/*.fish
-          set -g salmon_chips_sources $salmon_chips_sources $v
+          if not [ (basename $v) = 'uninstall.fish' ]
+            set -g salmon_chips_sources $salmon_chips_sources $v
+          end
         end
       end
     else
