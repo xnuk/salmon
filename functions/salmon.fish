@@ -44,9 +44,19 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
         if test -d $path
           set -l dir $path
         else if test -f $path
-          if echo $path | grep '/fish_prompt\.fish$' > /dev/null
+          # left prompt
+          if [ (basename $path) = 'fish_prompt.fish' ]
             if not set -q salmon_fish_prompt_sourced
               set -g salmon_fish_prompt_sourced 'true'
+              set -g salmon_chips_sources $salmon_chips_sources $path
+            end
+            return
+          end
+
+          # right prompt
+          if [ (basename $path) = 'fish_right_prompt.fish' ]
+            if not set -q salmon_fish_right_prompt_sourced
+              set -g salmon_fish_right_prompt_sourced 'true'
               set -g salmon_chips_sources $salmon_chips_sources $path
             end
             return
@@ -57,18 +67,39 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
         end
       end
 
+      set -l plugin_is_sane ''
+
       if test -f $dir/init.fish
         set -g salmon_chips_sources $salmon_chips_sources $dir/init.fish
+        set plugin_is_sane 'true'
       end
 
       if not set -q salmon_fish_prompt_sourced
           and test -f $dir/fish_prompt.fish
         set -g salmon_fish_prompt_sourced 'true'
+
         set -g salmon_chips_sources $salmon_chips_sources $dir/fish_prompt.fish
+        set plugin_is_sane 'true'
+      end
+
+      if not set -q salmon_fish_right_prompt_sourced
+          and test -f $dir/fish_right_prompt.fish
+        set -g salmon_fish_right_prompt_sourced 'true'
+
+        set -g salmon_chips_sources $salmon_chips_sources $dir/fish_right_prompt.fish
+        set plugin_is_sane 'true'
       end
 
       if test -d $dir/functions
         for v in $dir/functions/*.fish
+          set -g salmon_chips_sources $salmon_chips_sources $v
+        end
+        set plugin_is_sane 'true'
+      end
+
+      if [ $plugin_is_sane = '' ]
+        # it must be insane
+        for v in $dir/*.fish
           set -g salmon_chips_sources $salmon_chips_sources $v
         end
       end
