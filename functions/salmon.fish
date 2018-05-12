@@ -107,6 +107,11 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
             set -g salmon_chips_sources $salmon_chips_sources $v
           end
         end
+        return
+      else if test -f $dir/fishfile
+        for v in (cat $dir/fishfile | grep -E '^[^/]+/[^/]+$')
+          salmon $v
+        end
       end
     else
       set -g chips_should_update true
