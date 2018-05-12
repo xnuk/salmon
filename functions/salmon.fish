@@ -61,7 +61,8 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
         set -g salmon_chips_sources $salmon_chips_sources $dir/init.fish
       end
 
-      if test -f $dir/fish_prompt.fish
+      if not set -q salmon_fish_prompt_sourced
+          and test -f $dir/fish_prompt.fish
         set -g salmon_fish_prompt_sourced 'true'
         set -g salmon_chips_sources $salmon_chips_sources $dir/fish_prompt.fish
       end
