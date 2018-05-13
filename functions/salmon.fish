@@ -100,6 +100,15 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
         set plugin_is_sane 'true'
       end
 
+      if test -d $dir/conf.d
+        for v in $dir/conf.d/*.fish
+          if not [ (basename $v) = 'uninstall.fish' ]
+            set -g salmon_chips_sources $salmon_chips_sources $v
+            set plugin_is_sane 'true'
+          end
+        end
+      end
+
       if [ $plugin_is_sane = '' ]
         # it must be insane
         for v in $dir/*.fish
