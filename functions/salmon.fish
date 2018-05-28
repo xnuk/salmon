@@ -29,7 +29,7 @@ function salmon -d 'chips plugin.yaml generator; you probably don\'t want this'
   end
 
   if set -q chips_github_repos[1]
-    set -l q (echo $argv[1] | sed 's|/|\n|;s|/|\n|')
+    set -l q (echo $argv[1] | perl -pe 's|/|\n|;s|/|\n|')
     if not set -q q[2]
       return
     end
